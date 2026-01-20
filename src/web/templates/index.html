@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Tetris Trainer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>ML Tetris Trainer</h1>
+        <div id="status-indicator" class="status stopped">
+            <span class="status-dot"></span>
+            <span id="status-text">Stopped</span>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <!-- Left panel: Game board -->
+        <section class="panel game-panel">
+            <h2>Game Board</h2>
+            <div class="game-container">
+                <canvas id="game-board" width="300" height="600"></canvas>
+            </div>
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="label">Score:</span>
+                    <span id="current-score">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Lines:</span>
+                    <span id="lines-cleared">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Episode:</span>
+                    <span id="episode-count">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right panel: Metrics and controls -->
+        <section class="panel metrics-panel">
+            <h2>Training Metrics</h2>
+
+            <div class="chart-container">
+                <canvas id="metrics-chart"></canvas>
+            </div>
+
+            <div class="training-stats">
+                <div class="stat-item">
+                    <span class="label">Timesteps:</span>
+                    <span id="timesteps">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Avg Reward:</span>
+                    <span id="avg-reward">0.00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Best Lines:</span>
+                    <span id="best-lines">0</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="btn-start" class="btn btn-start">Start Training</button>
+                <button id="btn-stop" class="btn btn-stop" disabled>Stop Training</button>
+            </div>
+
+            <div class="config-section">
+                <h3>Configuration</h3>
+                <div class="config-item">
+                    <label for="target-lines">Target Lines:</label>
+                    <input type="number" id="target-lines" value="10" min="1" max="1000">
+                </div>
+                <div class="config-item">
+                    <label for="max-timesteps">Max Timesteps:</label>
+                    <input type="number" id="max-timesteps" value="100000" min="1000" step="1000">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>ML Tetris Trainer - Real-time AI Training Visualization</p>
+    </footer>
+
+    <!-- Load scripts in order -->
+    <script src="/static/game-board.js"></script>
+    <script src="/static/metrics-chart.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>
