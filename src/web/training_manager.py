@@ -1,7 +1,8 @@
 """Process-based training management with Queue communication."""
 
 import traceback
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Event
+from multiprocessing.synchronize import Event as EventType
 from pathlib import Path
 from typing import Optional, Dict, Any
 
@@ -11,21 +12,30 @@ class TrainingManager:
 
     Runs SB3 training in a separate Process to avoid blocking the async
     event loop. Uses Queues for communication: metrics flow from training
-    to server, commands flow from server to training.
+    to server, commands flow from server to training. Uses Events for
+    pause/resume and stop synchronization.
 
     Attributes:
         metrics_queue: Queue for training to send metrics to server.
         command_queue: Queue for server to send commands to training.
+        pause_event: Event for pause/resume (set=running, clear=paused).
+        stop_event: Event for stop signal (set=stop requested).
         process: Handle to the training subprocess.
-        status: Current status ("stopped", "running", "stopping").
+        status: Current status ("stopped", "running", "paused", "stopping").
     """
 
     def __init__(self):
-        """Initialize training manager with queues and stopped status."""
+        """Initialize training manager with queues, events, and stopped status."""
         self.metrics_queue: Queue = Queue()
         self.command_queue: Queue = Queue()
+        self.pause_event: EventType = Event()
+        self.stop_event: EventType = Event()
         self.process: Optional[Process] = None
         self.status: str = "stopped"
+
+        # Initialize events to correct state
+        self.pause_event.set()  # Not paused (set = unblocked)
+        self.stop_event.clear()  # Not stopped
 
     def start_training(self, config_dict: Dict[str, Any]) -> bool:
         """Start training in a subprocess.
@@ -44,9 +54,19 @@ class TrainingManager:
         self._clear_queue(self.metrics_queue)
         self._clear_queue(self.command_queue)
 
+        # Reset events for new session
+        self.pause_event.set()  # Not paused
+        self.stop_event.clear()  # Not stopped
+
         self.process = Process(
             target=self._training_worker,
-            args=(config_dict, self.metrics_queue, self.command_queue),
+            args=(
+                config_dict,
+                self.metrics_queue,
+                self.command_queue,
+                self.pause_event,
+                self.stop_event,
+            ),
             daemon=True,  # Terminate with parent
         )
         self.process.start()
@@ -56,14 +76,17 @@ class TrainingManager:
     def stop_training(self) -> None:
         """Stop the training process.
 
-        Sends stop command, waits with timeout, and terminates if needed.
+        Sets stop event, unblocks pause if paused, waits with timeout,
+        and terminates if needed.
         """
         if not self.is_running():
             self.status = "stopped"
             return
 
         self.status = "stopping"
-        self.command_queue.put({"command": "stop"})
+        self.stop_event.set()  # Signal stop via Event (fast path)
+        self.pause_event.set()  # Unblock if paused so worker can exit
+        self.command_queue.put({"command": "stop"})  # Backward compatibility
         self.process.join(timeout=5)
 
         if self.process.is_alive():
@@ -71,6 +94,54 @@ class TrainingManager:
             self.process.join(timeout=2)
 
         self.status = "stopped"
+
+    def pause_training(self) -> bool:
+        """Pause the training process.
+
+        Clears pause_event to block the callback's wait() call.
+
+        Returns:
+            True if successfully paused, False if not running or already paused.
+        """
+        if not self.is_running() or self.status == "paused":
+            return False
+        self.pause_event.clear()  # Block wait()
+        self.status = "paused"
+        return True
+
+    def resume_training(self) -> bool:
+        """Resume a paused training process.
+
+        Sets pause_event to unblock the callback's wait() call.
+
+        Returns:
+            True if successfully resumed, False if not paused.
+        """
+        if self.status != "paused":
+            return False
+        self.pause_event.set()  # Unblock wait()
+        self.status = "running"
+        return True
+
+    def set_mode(self, visual: bool) -> None:
+        """Toggle visual/headless mode.
+
+        Sends command to callback to control board update frequency.
+
+        Args:
+            visual: True for visual mode (send board updates), False for headless.
+        """
+        self.command_queue.put({"command": "set_mode", "visual": visual})
+
+    def set_speed(self, speed: float) -> None:
+        """Set visualization speed.
+
+        Sends command to callback to control step delay in visual mode.
+
+        Args:
+            speed: Speed factor from 0.1 (slowest) to 1.0 (fastest).
+        """
+        self.command_queue.put({"command": "set_speed", "speed": speed})
 
     def is_running(self) -> bool:
         """Check if training process is alive.
@@ -109,16 +180,20 @@ class TrainingManager:
         config_dict: Dict[str, Any],
         metrics_queue: Queue,
         command_queue: Queue,
+        pause_event: "EventType",
+        stop_event: "EventType",
     ) -> None:
         """Worker function that runs in separate process.
 
         Creates environment, agent, and callbacks, then runs training loop.
-        Communicates with server via queues.
+        Communicates with server via queues, uses Events for pause/stop sync.
 
         Args:
             config_dict: Training configuration dictionary.
             metrics_queue: Queue to send metrics to server.
             command_queue: Queue to receive commands from server.
+            pause_event: Event for pause/resume (set=running, clear=paused).
+            stop_event: Event for stop signal (set=stop requested).
         """
         # Import inside worker to avoid pickle issues with multiprocessing
         try:
@@ -158,6 +233,9 @@ class TrainingManager:
             web_callback = WebMetricsCallback(
                 metrics_queue=metrics_queue,
                 command_queue=command_queue,
+                pause_event=pause_event,
+                stop_event=stop_event,
+                checkpoint_dir=str(checkpoint_path),
                 update_freq=100,
                 board_update_freq=50,  # Reduced from 10 to prevent overwhelming WebSocket
                 verbose=1,
