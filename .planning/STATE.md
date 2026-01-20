@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2025-01-19)
 ## Current Position
 
 Phase: 3 of 5 (Web Visualization)
-Plan: 2 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-20 - Completed 03-01-PLAN.md (Project Setup and Backend)
+Last activity: 2026-01-20 - Completed 03-04-PLAN.md (Frontend WebSocket Integration)
 
-Progress: [█████░░░░░] 54%
+Progress: [██████░░░░] 57%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 6.9 min
-- Total execution time: 48 min
+- Total plans completed: 8
+- Average duration: 6.4 min
+- Total execution time: 52 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [█████░░░░░] 54%
 |-------|-------|-------|----------|
 | 01-environment-foundation | 2 | 17 min | 8.5 min |
 | 02-training-core | 3 | 19 min | 6.3 min |
-| 03-web-visualization | 2 | 12 min | 6.0 min |
+| 03-web-visualization | 3 | 16 min | 5.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (2 min), 02-02 (4 min), 02-03 (13 min), 03-02 (4 min), 03-01 (8 min)
+- Last 5 plans: 02-02 (4 min), 02-03 (13 min), 03-02 (4 min), 03-01 (8 min), 03-04 (4 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -58,6 +58,8 @@ Recent decisions affecting current work:
 - **Manual Chart.js updates**: chartjs-plugin-streaming unmaintained, manual update() more reliable
 - **Process isolation for training**: multiprocessing.Process to avoid blocking async event loop
 - **Queue-based IPC**: metrics_queue and command_queue for bidirectional communication
+- **WebSocket auto-reconnect**: 10 max attempts with exponential backoff (1s to 30s max)
+- **Message types**: board, metrics, episode, status, info, error for frontend routing
 
 ### Pending Todos
 
@@ -76,9 +78,10 @@ Research flags from SUMMARY.md:
 - **Phase 2 complete:** Test suite verifies all requirements, trained agent outperforms random baseline
 - Frontend assets created: HTML template, CSS styling, JS modules for Canvas and Chart.js
 - FastAPI server with WebSocket endpoint, TrainingManager with process isolation
+- **Frontend wiring complete:** WebSocketClient connects, routes messages to GameBoard.render() and MetricsChart.addDataPoint()
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 03-01-PLAN.md (Project Setup and Backend)
+Stopped at: Completed 03-04-PLAN.md (Frontend WebSocket Integration)
 Resume file: None
