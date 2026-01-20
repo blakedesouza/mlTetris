@@ -31,6 +31,7 @@ class TrainingManager:
         self.pause_event: EventType = Event()
         self.stop_event: EventType = Event()
         self.process: Optional[Process] = None
+        self.demo_process: Optional[Process] = None
         self.status: str = "stopped"
 
         # Control state (tracked for UI sync on reconnect)
@@ -80,11 +81,16 @@ class TrainingManager:
         return True
 
     def stop_training(self) -> None:
-        """Stop the training process.
+        """Stop the training process (or demo if running).
 
         Sets stop event, unblocks pause if paused, waits with timeout,
         and terminates if needed.
         """
+        # Also stop demo if running
+        if self.is_demo_running():
+            self.stop_demo()
+            return
+
         if not self.is_running():
             self.status = "stopped"
             return
@@ -160,7 +166,7 @@ class TrainingManager:
         return self.process is not None and self.process.is_alive()
 
     def get_status(self) -> Dict[str, Any]:
-        """Get current training status.
+        """Get current training/demo status.
 
         Returns:
             Dictionary with status, process info, and control state.
@@ -168,6 +174,7 @@ class TrainingManager:
         return {
             "status": self.status,
             "is_running": self.is_running(),
+            "is_demo": self.is_demo_running(),
             "visual_mode": self.visual_mode,
             "speed": self.speed,
         }
@@ -176,27 +183,64 @@ class TrainingManager:
         """Start demo mode with specified model.
 
         Args:
-            model_path: Path to model.zip file to use for demo.
+            model_path: Path to model.zip file to load.
 
         Returns:
             True if demo started, False if training/demo already running.
         """
+        # Prevent demo if training is running
         if self.is_running():
             return False
+        # Prevent if demo already running
+        if self.is_demo_running():
+            return False
 
-        # TODO: Full demo implementation in Plan 05-02
-        # For now, just check if we can start
+        # Clear queues before starting
+        self._clear_queue(self.metrics_queue)
+        self._clear_queue(self.command_queue)
+
+        # Reset stop event
+        self.stop_event.clear()
+
+        # Start demo process
+        self.demo_process = Process(
+            target=self._demo_worker,
+            args=(
+                model_path,
+                self.metrics_queue,
+                self.command_queue,
+                self.stop_event,
+            ),
+            daemon=True,
+        )
+        self.demo_process.start()
         self.status = "demo_running"
+        self.visual_mode = True  # Demo is always visual
         return True
 
     def stop_demo(self) -> None:
-        """Stop demo mode.
+        """Stop the demo process."""
+        if not self.is_demo_running():
+            return
 
-        Stops the demo process if running.
+        self.status = "stopping"
+        self.stop_event.set()
+        self.demo_process.join(timeout=3)
+
+        if self.demo_process.is_alive():
+            self.demo_process.terminate()
+            self.demo_process.join(timeout=1)
+
+        self.demo_process = None
+        self.status = "stopped"
+
+    def is_demo_running(self) -> bool:
+        """Check if demo process is alive.
+
+        Returns:
+            True if demo process is running, False otherwise.
         """
-        # TODO: Full demo implementation in Plan 05-02
-        if self.status == "demo_running":
-            self.status = "stopped"
+        return self.demo_process is not None and self.demo_process.is_alive()
 
     @staticmethod
     def _clear_queue(queue: Queue) -> None:
