@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2025-01-19)
 
 **Core value:** Watch an AI visibly improve at Tetris with full control over training and model management
-**Current focus:** Phase 5 in progress - Model Management & Polish
+**Current focus:** PROJECT COMPLETE - All 5 phases finished
 
 ## Current Position
 
 Phase: 5 of 5 (Model Management & Polish)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-20 - Completed 05-02-PLAN.md (Demo Mode Worker)
+Plan: 3 of 3 in current phase
+Status: COMPLETE
+Last activity: 2026-01-20 - Completed 05-03-PLAN.md (Model Management Frontend UI)
 
-Progress: [█████████░] 95%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 6.1 min
-- Total execution time: 85 min
+- Total plans completed: 15
+- Average duration: 5.9 min
+- Total execution time: 88 min
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: [█████████░] 95%
 | 02-training-core | 3 | 19 min | 6.3 min |
 | 03-web-visualization | 4 | 22 min | 5.5 min |
 | 04-training-controls | 3 | 18 min | 6 min |
-| 05-model-management-polish | 2 | 9 min | 4.5 min |
+| 05-model-management-polish | 3 | 12 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (8 min), 04-02 (4 min), 04-03 (6 min), 05-01 (7 min), 05-02 (2 min)
-- Trend: Stable
+- Last 5 plans: 04-02 (4 min), 04-03 (6 min), 05-01 (7 min), 05-02 (2 min), 05-03 (3 min)
+- Trend: Accelerating (final phase averaged 4 min/plan)
 
 *Updated after each plan completion*
 
@@ -76,10 +76,12 @@ Recent decisions affecting current work:
 - **Demo mode uses same queue infrastructure**: Reuse metrics_queue and command_queue for demo
 - **Demo is always visual mode**: visual_mode=True on demo start, no headless option
 - **Unified stop button**: stop_training() also stops demo if running
+- **ModelManager on WebSocket connect**: Initialize JS module after wsClient available
+- **Demo toggle button**: Same button shows Demo/Stop based on state
 
 ### Pending Todos
 
-None yet.
+None - project complete.
 
 ### Blockers/Concerns
 
@@ -102,9 +104,11 @@ Research flags from SUMMARY.md:
 - **Phase 4 complete:** All training controls working end-to-end (pause/resume, mode toggle, speed slider, auto-save best)
 - **Model slot backend complete:** ModelSlotManager with CRUD+export, REST endpoints, WebSocket demo commands
 - **Demo mode worker complete:** _demo_worker, start_demo/stop_demo methods, demo-training mutual exclusion
+- **Model management UI complete:** Leaderboard table, save/delete/export, demo controls
+- **PROJECT COMPLETE:** All 5 phases finished, full training and model management workflow operational
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 05-02-PLAN.md (Demo Mode Worker)
+Stopped at: PROJECT COMPLETE - All phases finished
 Resume file: None
