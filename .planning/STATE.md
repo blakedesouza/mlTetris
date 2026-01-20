@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2025-01-19)
 ## Current Position
 
 Phase: 3 of 5 (Web Visualization)
-Plan: 2 of 4 in current phase
+Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-20 - Completed 03-02-PLAN.md (Frontend Assets)
+Last activity: 2026-01-20 - Completed 03-01-PLAN.md (Project Setup and Backend)
 
-Progress: [█████░░░░░] 50%
+Progress: [█████░░░░░] 54%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 6.7 min
-- Total execution time: 40 min
+- Total plans completed: 7
+- Average duration: 6.9 min
+- Total execution time: 48 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [█████░░░░░] 50%
 |-------|-------|-------|----------|
 | 01-environment-foundation | 2 | 17 min | 8.5 min |
 | 02-training-core | 3 | 19 min | 6.3 min |
-| 03-web-visualization | 1 | 4 min | 4.0 min |
+| 03-web-visualization | 2 | 12 min | 6.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (8 min), 02-01 (2 min), 02-02 (4 min), 02-03 (13 min), 03-02 (4 min)
+- Last 5 plans: 02-01 (2 min), 02-02 (4 min), 02-03 (13 min), 03-02 (4 min), 03-01 (8 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -56,6 +56,8 @@ Recent decisions affecting current work:
 - **Baseline comparison threshold**: 25k timesteps with soft 0.9x threshold for statistical robustness
 - **Chart.js via CDN**: Simpler than npm bundling for single-page dashboard
 - **Manual Chart.js updates**: chartjs-plugin-streaming unmaintained, manual update() more reliable
+- **Process isolation for training**: multiprocessing.Process to avoid blocking async event loop
+- **Queue-based IPC**: metrics_queue and command_queue for bidirectional communication
 
 ### Pending Todos
 
@@ -73,9 +75,10 @@ Research flags from SUMMARY.md:
 - Training callbacks and headless training function complete
 - **Phase 2 complete:** Test suite verifies all requirements, trained agent outperforms random baseline
 - Frontend assets created: HTML template, CSS styling, JS modules for Canvas and Chart.js
+- FastAPI server with WebSocket endpoint, TrainingManager with process isolation
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 03-02-PLAN.md (Frontend Assets)
+Stopped at: Completed 03-01-PLAN.md (Project Setup and Backend)
 Resume file: None
