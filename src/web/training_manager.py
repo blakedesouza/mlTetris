@@ -1,6 +1,8 @@
 """Process-based training management with Queue communication."""
 
+import traceback
 from multiprocessing import Process, Queue
+from pathlib import Path
 from typing import Optional, Dict, Any
 
 
@@ -30,11 +32,12 @@ class TrainingManager:
 
         Args:
             config_dict: Training configuration dictionary.
+                Keys: target_lines, max_timesteps, checkpoint_dir, checkpoint_freq
 
         Returns:
             True if training started, False if already running.
         """
-        if self.process is not None and self.process.is_alive():
+        if self.is_running():
             return False
 
         # Clear queues before starting new training
@@ -44,6 +47,7 @@ class TrainingManager:
         self.process = Process(
             target=self._training_worker,
             args=(config_dict, self.metrics_queue, self.command_queue),
+            daemon=True,  # Terminate with parent
         )
         self.process.start()
         self.status = "running"
@@ -54,7 +58,7 @@ class TrainingManager:
 
         Sends stop command, waits with timeout, and terminates if needed.
         """
-        if self.process is None or not self.process.is_alive():
+        if not self.is_running():
             self.status = "stopped"
             return
 
@@ -108,14 +112,98 @@ class TrainingManager:
     ) -> None:
         """Worker function that runs in separate process.
 
-        This is a stub - the actual training loop is implemented in Plan 03.
-        The function signature is what matters for now.
+        Creates environment, agent, and callbacks, then runs training loop.
+        Communicates with server via queues.
 
         Args:
             config_dict: Training configuration dictionary.
             metrics_queue: Queue to send metrics to server.
             command_queue: Queue to receive commands from server.
         """
-        # Import training modules inside function to avoid pickle issues
-        # Actual implementation will be added in Plan 03
-        pass
+        # Import inside worker to avoid pickle issues with multiprocessing
+        try:
+            from src.environment import make_env, EnvConfig
+            from src.training.agent import TetrisAgent
+            from src.training.config import TrainingConfig
+            from src.training.callbacks import WebMetricsCallback, LinesTrackingCallback
+            from stable_baselines3.common.callbacks import CallbackList
+
+            # Create config from dict
+            training_config = TrainingConfig(
+                target_lines=config_dict.get("target_lines"),
+                max_timesteps=config_dict.get("max_timesteps", 100000),
+                checkpoint_dir=config_dict.get("checkpoint_dir", "./checkpoints"),
+                checkpoint_freq=config_dict.get("checkpoint_freq", 10000),
+            )
+
+            # Create environment (headless for training, but we extract board state)
+            env_config = EnvConfig(render_mode=None)
+            env = make_env(env_config)()
+
+            # Create or load agent
+            checkpoint_path = Path(training_config.checkpoint_dir)
+            checkpoint_path.mkdir(parents=True, exist_ok=True)
+            latest_checkpoint = checkpoint_path / "latest"
+
+            if latest_checkpoint.exists():
+                agent = TetrisAgent.load_checkpoint(latest_checkpoint, env)
+                metrics_queue.put({
+                    "type": "info",
+                    "message": f"Resumed from checkpoint ({agent.timesteps_trained} steps)",
+                })
+            else:
+                agent = TetrisAgent(env, training_config)
+
+            # Set up callbacks
+            web_callback = WebMetricsCallback(
+                metrics_queue=metrics_queue,
+                command_queue=command_queue,
+                update_freq=100,
+                board_update_freq=10,
+                verbose=1,
+            )
+
+            lines_tracker = LinesTrackingCallback(verbose=0)
+
+            callback_list = CallbackList([web_callback, lines_tracker])
+
+            # Calculate remaining timesteps
+            remaining = training_config.max_timesteps - agent.timesteps_trained
+            if remaining <= 0:
+                metrics_queue.put({
+                    "type": "status",
+                    "status": "stopped",
+                    "message": "Training already complete",
+                })
+                return
+
+            # Send training started status
+            metrics_queue.put({
+                "type": "status",
+                "status": "running",
+            })
+
+            # Train
+            agent.train(remaining, callback=callback_list)
+
+            # Save checkpoint
+            agent.save_checkpoint(checkpoint_path / "latest")
+            agent.save_checkpoint(checkpoint_path / "final")
+
+            metrics_queue.put({
+                "type": "status",
+                "status": "stopped",
+                "message": f"Training complete ({agent.timesteps_trained} total steps)",
+            })
+
+        except Exception as e:
+            # Send error to server
+            metrics_queue.put({
+                "type": "error",
+                "error": str(e),
+                "traceback": traceback.format_exc(),
+            })
+            metrics_queue.put({
+                "type": "status",
+                "status": "stopped",
+            })
