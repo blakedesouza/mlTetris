@@ -2,7 +2,7 @@
 
 from .config import TrainingConfig
 from .agent import TetrisAgent
-from .callbacks import LinesTrackingCallback, GoalReachedCallback
+from .callbacks import LinesTrackingCallback, GoalReachedCallback, WebMetricsCallback
 from .train import train_headless
 
 __all__ = [
@@ -10,5 +10,6 @@ __all__ = [
     "TetrisAgent",
     "LinesTrackingCallback",
     "GoalReachedCallback",
+    "WebMetricsCallback",
     "train_headless",
 ]
