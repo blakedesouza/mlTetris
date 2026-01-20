@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Environment Foundation** - Gymnasium-compatible Tetris with feature-based state and shaped rewards
 - [x] **Phase 2: Training Core** - DQN agent with experience replay, headless training, and checkpointing
 - [x] **Phase 3: Web Visualization** - Live dashboard with game board, metrics, and start/stop controls
-- [ ] **Phase 4: Training Controls** - Pause/resume, headless/visual toggle, and speed control
+- [x] **Phase 4: Training Controls** - Pause/resume, headless/visual toggle, and speed control
 - [ ] **Phase 5: Model Management & Polish** - Multiple model slots, comparison view, and demo mode
 
 ## Phase Details
@@ -86,9 +86,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Backend Event-based pause/resume and enhanced WebMetricsCallback with controls
-- [ ] 04-02-PLAN.md — WebSocket command handlers and frontend UI control elements
-- [ ] 04-03-PLAN.md — Frontend control wiring and end-to-end verification
+- [x] 04-01-PLAN.md — Backend Event-based pause/resume and enhanced WebMetricsCallback with controls
+- [x] 04-02-PLAN.md — WebSocket command handlers and frontend UI control elements
+- [x] 04-03-PLAN.md — Frontend control wiring and end-to-end verification
 
 ### Phase 5: Model Management & Polish
 **Goal**: Deliver model comparison features and demo mode for showcasing trained models
@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Environment Foundation | 2/2 | Complete | 2025-01-20 |
 | 2. Training Core | 3/3 | Complete | 2026-01-20 |
 | 3. Web Visualization | 5/5 | Complete | 2026-01-20 |
-| 4. Training Controls | 0/3 | Planned | - |
+| 4. Training Controls | 3/3 | Complete | 2026-01-20 |
 | 5. Model Management & Polish | 0/TBD | Not started | - |
 
 ---

@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2025-01-19)
 
 **Core value:** Watch an AI visibly improve at Tetris with full control over training and model management
-**Current focus:** Phase 4 - Training Controls (in progress)
+**Current focus:** Phase 4 complete - Training Controls
 
 ## Current Position
 
 Phase: 4 of 5 (Training Controls)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-20 - Completed 04-02-PLAN.md (Controls UI Integration)
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-20 - Completed 04-03-PLAN.md (Frontend Control Wiring)
 
-Progress: [████████░░] 78%
+Progress: [█████████░] 86%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: 6.4 min
-- Total execution time: 70 min
+- Total plans completed: 12
+- Average duration: 6.3 min
+- Total execution time: 76 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [████████░░] 78%
 | 01-environment-foundation | 2 | 17 min | 8.5 min |
 | 02-training-core | 3 | 19 min | 6.3 min |
 | 03-web-visualization | 4 | 22 min | 5.5 min |
-| 04-training-controls | 2 | 12 min | 6 min |
+| 04-training-controls | 3 | 18 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (8 min), 03-04 (4 min), 03-03 (6 min), 04-01 (8 min), 04-02 (4 min)
+- Last 5 plans: 03-04 (4 min), 03-03 (6 min), 04-01 (8 min), 04-02 (4 min), 04-03 (6 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -64,9 +64,11 @@ Recent decisions affecting current work:
 - **Board state extraction in callback**: Navigate through wrappers to unwrapped env, extract board[0:20, 4:-4]
 - **Event-based pause/resume**: pause_event.set() = running, .clear() = paused (blocks wait())
 - **Visual mode = board update toggle**: Training always headless, visual mode enables board sending
-- **Speed control via step_delay**: 0-100ms delay in visual mode only
+- **Speed control via step_delay**: 0-500ms delay in visual mode only
 - **Auto-save best model**: Save to checkpoint_dir/best when lines_cleared improves
 - **Execution order in callback**: Check stop -> process commands -> wait on pause -> check stop again
+- **State sync on reconnect**: TrainingManager tracks visual_mode/speed, includes in status response
+- **Pre-checked settings sync**: Send set_mode/set_speed after start if visual mode checkbox checked
 
 ### Pending Todos
 
@@ -89,9 +91,11 @@ Research flags from SUMMARY.md:
 - **Training-web integration complete:** WebMetricsCallback sends metrics/board via Queue, TrainingManager._training_worker runs full training loop
 - **Training controls backend complete:** Event-based pause/resume, visual mode, speed control, auto-save best model
 - **Controls UI integration complete:** WebSocket command handlers and HTML/CSS UI controls for pause/mode/speed
+- **Frontend control wiring complete:** Event handlers wired to WebSocket commands, state sync on reconnect
+- **Phase 4 complete:** All training controls working end-to-end (pause/resume, mode toggle, speed slider, auto-save best)
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 04-02-PLAN.md (Controls UI Integration)
+Stopped at: Completed 04-03-PLAN.md (Frontend Control Wiring) - Phase 4 complete
 Resume file: None
