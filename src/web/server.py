@@ -239,6 +239,34 @@ async def export_model(request: ExportRequest):
     )
 
 
+# Demo mode endpoints
+@app.post("/api/demo/start/{slot_name}")
+async def start_demo(slot_name: str):
+    """Start demo mode with specified model."""
+    if not model_manager.slot_exists(slot_name):
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "error": f"Slot '{slot_name}' not found"},
+        )
+
+    model_path = model_manager.get_slot_path(slot_name) / "model.zip"
+    success = training_manager.start_demo(str(model_path))
+
+    if success:
+        return {"success": True, "message": f"Demo started for '{slot_name}'"}
+    return JSONResponse(
+        status_code=409,
+        content={"success": False, "error": "Training or demo already running"},
+    )
+
+
+@app.post("/api/demo/stop")
+async def stop_demo():
+    """Stop demo mode."""
+    training_manager.stop_demo()
+    return {"success": True, "message": "Demo stopped"}
+
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -253,6 +281,8 @@ async def websocket_endpoint(websocket: WebSocket):
         - {"command": "set_mode", "visual": true/false}: Toggle headless/visual mode
         - {"command": "set_speed", "speed": 0.1-1.0}: Set visualization speed
         - {"command": "status"}: Get current status
+        - {"command": "demo_start", "slot_name": "..."}: Start demo mode with model from slot
+        - {"command": "demo_stop"}: Stop demo mode
     """
     await connection_manager.connect(websocket)
     try:
@@ -375,6 +405,45 @@ async def websocket_endpoint(websocket: WebSocket):
             elif command == "pong":
                 # Keepalive response - connection is alive
                 pass
+            elif command == "demo_start":
+                slot_name = data.get("slot_name")
+                if not slot_name:
+                    await connection_manager.send_to(
+                        websocket,
+                        {"type": "error", "error": "Missing slot_name for demo_start"},
+                    )
+                elif not model_manager.slot_exists(slot_name):
+                    await connection_manager.send_to(
+                        websocket,
+                        {"type": "error", "error": f"Slot '{slot_name}' not found"},
+                    )
+                else:
+                    model_path = model_manager.get_slot_path(slot_name) / "model.zip"
+                    success = training_manager.start_demo(str(model_path))
+                    if success:
+                        await connection_manager.send_to(
+                            websocket,
+                            {
+                                "type": "status",
+                                "status": "demo_running",
+                                "message": f"Demo started: {slot_name}",
+                            },
+                        )
+                    else:
+                        await connection_manager.send_to(
+                            websocket,
+                            {"type": "error", "error": "Training or demo already running"},
+                        )
+            elif command == "demo_stop":
+                training_manager.stop_demo()
+                await connection_manager.send_to(
+                    websocket,
+                    {
+                        "type": "status",
+                        "status": "stopped",
+                        "message": "Demo stopped",
+                    },
+                )
             else:
                 await connection_manager.send_to(
                     websocket,

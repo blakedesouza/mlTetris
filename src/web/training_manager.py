@@ -172,6 +172,32 @@ class TrainingManager:
             "speed": self.speed,
         }
 
+    def start_demo(self, model_path: str) -> bool:
+        """Start demo mode with specified model.
+
+        Args:
+            model_path: Path to model.zip file to use for demo.
+
+        Returns:
+            True if demo started, False if training/demo already running.
+        """
+        if self.is_running():
+            return False
+
+        # TODO: Full demo implementation in Plan 05-02
+        # For now, just check if we can start
+        self.status = "demo_running"
+        return True
+
+    def stop_demo(self) -> None:
+        """Stop demo mode.
+
+        Stops the demo process if running.
+        """
+        # TODO: Full demo implementation in Plan 05-02
+        if self.status == "demo_running":
+            self.status = "stopped"
+
     @staticmethod
     def _clear_queue(queue: Queue) -> None:
         """Clear all items from a queue.
