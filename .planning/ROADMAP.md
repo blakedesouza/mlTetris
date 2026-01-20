@@ -65,12 +65,14 @@ Plans:
   5. Real-time chart updates showing reward/score progression during training
   6. Split view displays game board and metrics side by side
   7. Training status indicator shows running/paused/stopped state
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — FastAPI server with WebSocket support and TrainingManager with process isolation
+- [ ] 03-02-PLAN.md — Frontend static assets: HTML template, CSS styles, JavaScript modules
+- [ ] 03-03-PLAN.md — Training-web integration: WebMetricsCallback and board state extraction
+- [ ] 03-04-PLAN.md — Frontend functionality: WebSocket client, Canvas rendering, Chart.js wiring
+- [ ] 03-05-PLAN.md — Server command handling and end-to-end integration verification
 
 ### Phase 4: Training Controls
 **Goal**: Deliver fine-grained training control including pause/resume, mode toggle, and speed adjustment
@@ -111,7 +113,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Environment Foundation | 2/2 | Complete | 2025-01-20 |
 | 2. Training Core | 3/3 | Complete | 2026-01-20 |
-| 3. Web Visualization | 0/TBD | Not started | - |
+| 3. Web Visualization | 0/5 | Planned | - |
 | 4. Training Controls | 0/TBD | Not started | - |
 | 5. Model Management & Polish | 0/TBD | Not started | - |
 
@@ -119,4 +121,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 *Roadmap created: 2025-01-19*
 *Phase 1 planned: 2025-01-20*
 *Phase 2 planned: 2025-01-20*
+*Phase 3 planned: 2026-01-20*
 *Coverage: 29/29 v1 requirements mapped*
