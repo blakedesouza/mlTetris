@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2025-01-19)
 ## Current Position
 
 Phase: 5 of 5 (Model Management & Polish)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-20 - Completed 05-01-PLAN.md (Model Slot Backend)
+Last activity: 2026-01-20 - Completed 05-02-PLAN.md (Demo Mode Worker)
 
-Progress: [█████████░] 93%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
-- Average duration: 6.4 min
-- Total execution time: 83 min
+- Total plans completed: 14
+- Average duration: 6.1 min
+- Total execution time: 85 min
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [█████████░] 93%
 | 02-training-core | 3 | 19 min | 6.3 min |
 | 03-web-visualization | 4 | 22 min | 5.5 min |
 | 04-training-controls | 3 | 18 min | 6 min |
-| 05-model-management-polish | 1 | 7 min | 7 min |
+| 05-model-management-polish | 2 | 9 min | 4.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (6 min), 04-01 (8 min), 04-02 (4 min), 04-03 (6 min), 05-01 (7 min)
+- Last 5 plans: 04-01 (8 min), 04-02 (4 min), 04-03 (6 min), 05-01 (7 min), 05-02 (2 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -73,6 +73,9 @@ Recent decisions affecting current work:
 - **Model slots location**: checkpoints/slots/ with model.zip + metadata.json (no replay buffer)
 - **Slot name validation**: Alphanumeric, underscore, hyphen only
 - **Demo mode pattern**: REST + WebSocket dual interface for one-off and real-time commands
+- **Demo mode uses same queue infrastructure**: Reuse metrics_queue and command_queue for demo
+- **Demo is always visual mode**: visual_mode=True on demo start, no headless option
+- **Unified stop button**: stop_training() also stops demo if running
 
 ### Pending Todos
 
@@ -98,9 +101,10 @@ Research flags from SUMMARY.md:
 - **Frontend control wiring complete:** Event handlers wired to WebSocket commands, state sync on reconnect
 - **Phase 4 complete:** All training controls working end-to-end (pause/resume, mode toggle, speed slider, auto-save best)
 - **Model slot backend complete:** ModelSlotManager with CRUD+export, REST endpoints, WebSocket demo commands
+- **Demo mode worker complete:** _demo_worker, start_demo/stop_demo methods, demo-training mutual exclusion
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 05-01-PLAN.md (Model Slot Backend)
+Stopped at: Completed 05-02-PLAN.md (Demo Mode Worker)
 Resume file: None
