@@ -30,11 +30,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Agent can select final piece placements (rotation + column) as single actions
   4. Rewards penalize holes/height and reward line clears (not just sparse line-clear scoring)
   5. Environment passes Gymnasium check_env validation
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Project setup and ShapedRewardWrapper implementation
+- [ ] 01-02-PLAN.md — Environment factory, tests, and Gymnasium validation
 
 ### Phase 2: Training Core
 **Goal**: Deliver a working DQN agent that learns to play Tetris with headless training and full checkpoint support
@@ -108,7 +108,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Environment Foundation | 0/TBD | Not started | - |
+| 1. Environment Foundation | 0/2 | Planned | - |
 | 2. Training Core | 0/TBD | Not started | - |
 | 3. Web Visualization | 0/TBD | Not started | - |
 | 4. Training Controls | 0/TBD | Not started | - |
@@ -116,4 +116,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 ---
 *Roadmap created: 2025-01-19*
+*Phase 1 planned: 2025-01-20*
 *Coverage: 29/29 v1 requirements mapped*
