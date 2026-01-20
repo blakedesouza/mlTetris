@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2025-01-19)
 
 **Core value:** Watch an AI visibly improve at Tetris with full control over training and model management
-**Current focus:** Phase 3 - Web Visualization (in progress)
+**Current focus:** Phase 4 - Training Controls (in progress)
 
 ## Current Position
 
-Phase: 3 of 5 (Web Visualization)
-Plan: 4 of 5 in current phase
+Phase: 4 of 5 (Training Controls)
+Plan: 1 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-20 - Completed 03-03-PLAN.md (Training-to-Web Integration)
+Last activity: 2026-01-20 - Completed 04-01-PLAN.md (Training Controls Backend)
 
-Progress: [██████░░░░] 64%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 6.4 min
-- Total execution time: 58 min
+- Total plans completed: 10
+- Average duration: 6.6 min
+- Total execution time: 66 min
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [██████░░░░] 64%
 | 01-environment-foundation | 2 | 17 min | 8.5 min |
 | 02-training-core | 3 | 19 min | 6.3 min |
 | 03-web-visualization | 4 | 22 min | 5.5 min |
+| 04-training-controls | 1 | 8 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (13 min), 03-02 (4 min), 03-01 (8 min), 03-04 (4 min), 03-03 (6 min)
+- Last 5 plans: 03-02 (4 min), 03-01 (8 min), 03-04 (4 min), 03-03 (6 min), 04-01 (8 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -61,6 +62,11 @@ Recent decisions affecting current work:
 - **WebSocket auto-reconnect**: 10 max attempts with exponential backoff (1s to 30s max)
 - **Message types**: board, metrics, episode, status, info, error for frontend routing
 - **Board state extraction in callback**: Navigate through wrappers to unwrapped env, extract board[0:20, 4:-4]
+- **Event-based pause/resume**: pause_event.set() = running, .clear() = paused (blocks wait())
+- **Visual mode = board update toggle**: Training always headless, visual mode enables board sending
+- **Speed control via step_delay**: 0-100ms delay in visual mode only
+- **Auto-save best model**: Save to checkpoint_dir/best when lines_cleared improves
+- **Execution order in callback**: Check stop -> process commands -> wait on pause -> check stop again
 
 ### Pending Todos
 
@@ -81,9 +87,10 @@ Research flags from SUMMARY.md:
 - FastAPI server with WebSocket endpoint, TrainingManager with process isolation
 - **Frontend wiring complete:** WebSocketClient connects, routes messages to GameBoard.render() and MetricsChart.addDataPoint()
 - **Training-web integration complete:** WebMetricsCallback sends metrics/board via Queue, TrainingManager._training_worker runs full training loop
+- **Training controls backend complete:** Event-based pause/resume, visual mode, speed control, auto-save best model
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 03-03-PLAN.md (Training-to-Web Integration)
+Stopped at: Completed 04-01-PLAN.md (Training Controls Backend)
 Resume file: None
