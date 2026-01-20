@@ -165,19 +165,32 @@ async def websocket_endpoint(websocket: WebSocket):
             if command == "start":
                 config_dict = data.get("config", {})
                 success = training_manager.start_training(config_dict)
-                await connection_manager.send_to(
-                    websocket,
-                    {
-                        "type": "response",
-                        "command": "start",
-                        "success": success,
-                    },
-                )
+                if success:
+                    await connection_manager.send_to(
+                        websocket,
+                        {
+                            "type": "status",
+                            "status": "running",
+                            "message": "Training started",
+                        },
+                    )
+                else:
+                    await connection_manager.send_to(
+                        websocket,
+                        {
+                            "type": "error",
+                            "error": "Training already running",
+                        },
+                    )
             elif command == "stop":
                 training_manager.stop_training()
                 await connection_manager.send_to(
                     websocket,
-                    {"type": "response", "command": "stop", "success": True},
+                    {
+                        "type": "status",
+                        "status": "stopped",
+                        "message": "Training stopped",
+                    },
                 )
             elif command == "status":
                 await connection_manager.send_to(
