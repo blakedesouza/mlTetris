@@ -88,13 +88,13 @@
 | ENV-03 | Phase 1 | Complete |
 | ENV-04 | Phase 1 | Complete |
 | ENV-05 | Phase 1 | Complete |
-| TRAIN-01 | Phase 2 | Pending |
+| TRAIN-01 | Phase 2 | Complete |
 | TRAIN-02 | Phase 3 | Pending |
 | TRAIN-03 | Phase 3 | Pending |
-| TRAIN-04 | Phase 2 | Pending |
+| TRAIN-04 | Phase 2 | Complete |
 | TRAIN-05 | Phase 3 | Pending |
 | TRAIN-06 | Phase 3 | Pending |
-| TRAIN-07 | Phase 2 | Pending |
+| TRAIN-07 | Phase 2 | Complete |
 | TRAIN-08 | Phase 3 | Pending |
 | TRAIN-09 | Phase 4 | Pending |
 | TRAIN-10 | Phase 4 | Pending |
@@ -105,9 +105,9 @@
 | VIS-03 | Phase 3 | Pending |
 | VIS-04 | Phase 3 | Pending |
 | VIS-05 | Phase 5 | Pending |
-| MODEL-01 | Phase 2 | Pending |
-| MODEL-02 | Phase 2 | Pending |
-| MODEL-03 | Phase 2 | Pending |
+| MODEL-01 | Phase 2 | Complete |
+| MODEL-02 | Phase 2 | Complete |
+| MODEL-03 | Phase 2 | Complete |
 | MODEL-04 | Phase 5 | Pending |
 | MODEL-05 | Phase 5 | Pending |
 | MODEL-06 | Phase 5 | Pending |
@@ -120,4 +120,4 @@
 
 ---
 *Requirements defined: 2025-01-19*
-*Last updated: 2025-01-19 after roadmap creation*
+*Last updated: 2026-01-20 after Phase 2 completion*

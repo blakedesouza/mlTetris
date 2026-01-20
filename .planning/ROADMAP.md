@@ -13,7 +13,7 @@ This roadmap delivers an ML Tetris trainer in five phases: first building a Gymn
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Environment Foundation** - Gymnasium-compatible Tetris with feature-based state and shaped rewards
-- [ ] **Phase 2: Training Core** - DQN agent with experience replay, headless training, and checkpointing
+- [x] **Phase 2: Training Core** - DQN agent with experience replay, headless training, and checkpointing
 - [ ] **Phase 3: Web Visualization** - Live dashboard with game board, metrics, and start/stop controls
 - [ ] **Phase 4: Training Controls** - Pause/resume, headless/visual toggle, and speed control
 - [ ] **Phase 5: Model Management & Polish** - Multiple model slots, comparison view, and demo mode
@@ -49,9 +49,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Training configuration and TetrisAgent wrapper with checkpoint support
-- [ ] 02-02-PLAN.md — Callbacks (goal-based stopping, lines tracking) and headless training function
-- [ ] 02-03-PLAN.md — Test suite and end-to-end training verification
+- [x] 02-01-PLAN.md — Training configuration and TetrisAgent wrapper with checkpoint support
+- [x] 02-02-PLAN.md — Callbacks (goal-based stopping, lines tracking) and headless training function
+- [x] 02-03-PLAN.md — Test suite and end-to-end training verification
 
 ### Phase 3: Web Visualization
 **Goal**: Deliver a web dashboard where users can watch AI play, view metrics, and control training
@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Environment Foundation | 2/2 | Complete | 2025-01-20 |
-| 2. Training Core | 0/3 | Not started | - |
+| 2. Training Core | 3/3 | Complete | 2026-01-20 |
 | 3. Web Visualization | 0/TBD | Not started | - |
 | 4. Training Controls | 0/TBD | Not started | - |
 | 5. Model Management & Polish | 0/TBD | Not started | - |
