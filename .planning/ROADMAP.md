@@ -99,11 +99,12 @@ Plans:
   2. User can view leaderboard comparing performance metrics across saved models
   3. User can watch any saved model play in demo mode (no training, just showcase)
   4. User can export best model to standalone file for sharing/backup
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — Backend: ModelSlotManager class and REST API for model operations
+- [ ] 05-02-PLAN.md — Demo mode worker implementation in TrainingManager
+- [ ] 05-03-PLAN.md — Frontend: Leaderboard table, save/delete/export UI, and demo controls
 
 ## Progress
 
@@ -116,7 +117,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Training Core | 3/3 | Complete | 2026-01-20 |
 | 3. Web Visualization | 5/5 | Complete | 2026-01-20 |
 | 4. Training Controls | 3/3 | Complete | 2026-01-20 |
-| 5. Model Management & Polish | 0/TBD | Not started | - |
+| 5. Model Management & Polish | 0/3 | Planned | - |
 
 ---
 *Roadmap created: 2025-01-19*
@@ -124,4 +125,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 *Phase 2 planned: 2025-01-20*
 *Phase 3 planned: 2026-01-20*
 *Phase 4 planned: 2026-01-20*
+*Phase 5 planned: 2026-01-20*
 *Coverage: 29/29 v1 requirements mapped*
