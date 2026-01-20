@@ -69,12 +69,15 @@ class TetrisAgent:
             total_timesteps: Number of timesteps to train.
             callback: Optional callback(s) for monitoring/checkpointing.
         """
+        timesteps_before = self.model.num_timesteps
         self.model.learn(
             total_timesteps=total_timesteps,
             callback=callback,
             reset_num_timesteps=False,  # Continue counting from previous
         )
-        self._total_timesteps_trained += total_timesteps
+        # Track actual timesteps trained (not requested), handles early stopping
+        actual_trained = self.model.num_timesteps - timesteps_before
+        self._total_timesteps_trained += actual_trained
 
     def save_checkpoint(self, path: Union[str, Path]) -> None:
         """Save complete training state to checkpoint directory.

@@ -57,19 +57,38 @@ class TrainingConfigRequest(BaseModel):
 # Background task for metrics polling
 async def poll_metrics() -> None:
     """Background task to poll metrics queue and broadcast to WebSocket clients."""
+    from queue import Empty
+    import time
+
+    message_count = 0
+    last_log_time = time.time()
+
     while True:
         try:
-            # Non-blocking check for new metrics
-            while not training_manager.metrics_queue.empty():
+            # Process all available messages (up to 50 per cycle to avoid blocking)
+            processed = 0
+            for _ in range(50):
                 try:
                     metrics = training_manager.metrics_queue.get_nowait()
-                    await connection_manager.broadcast(metrics)
-                except Exception:
-                    break
+                    if connection_manager.active_connections:
+                        await connection_manager.broadcast(metrics)
+                        processed += 1
+                        message_count += 1
+                except Empty:
+                    break  # No more messages
+                except Exception as e:
+                    print(f"Broadcast error: {e}", flush=True)
+
+            # Log stats every 10 seconds for debugging
+            now = time.time()
+            if now - last_log_time > 10:
+                print(f"[poll_metrics] {message_count} messages broadcast, {len(connection_manager.active_connections)} clients", flush=True)
+                last_log_time = now
+
         except Exception as e:
-            # Log error but don't crash the polling loop
-            print(f"Metrics polling error: {e}")
-        await asyncio.sleep(0.1)  # 100ms poll interval
+            print(f"Metrics polling error: {e}", flush=True)
+
+        await asyncio.sleep(0.05)  # 50ms poll interval
 
 
 @app.on_event("startup")
@@ -158,8 +177,20 @@ async def websocket_endpoint(websocket: WebSocket):
         )
 
         while True:
-            # Receive and handle commands
-            data = await websocket.receive_json()
+            # Receive with timeout to detect stale connections
+            try:
+                data = await asyncio.wait_for(
+                    websocket.receive_json(),
+                    timeout=30.0  # 30 second timeout
+                )
+            except asyncio.TimeoutError:
+                # Send keepalive ping
+                try:
+                    await websocket.send_json({"type": "ping"})
+                    continue
+                except Exception:
+                    # Connection dead
+                    break
             command = data.get("command")
 
             if command == "start":
@@ -197,6 +228,9 @@ async def websocket_endpoint(websocket: WebSocket):
                     websocket,
                     {"type": "status", **training_manager.get_status()},
                 )
+            elif command == "pong":
+                # Keepalive response - connection is alive
+                pass
             else:
                 await connection_manager.send_to(
                     websocket,

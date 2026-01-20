@@ -159,7 +159,7 @@ class TrainingManager:
                 metrics_queue=metrics_queue,
                 command_queue=command_queue,
                 update_freq=100,
-                board_update_freq=10,
+                board_update_freq=50,  # Reduced from 10 to prevent overwhelming WebSocket
                 verbose=1,
             )
 

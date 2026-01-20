@@ -46,17 +46,22 @@ class ConnectionManager:
         Args:
             message: Dictionary to send as JSON to all clients.
         """
+        if not self.active_connections:
+            return
+
         disconnected = []
-        for connection in self.active_connections:
+        for connection in self.active_connections[:]:  # Copy list to avoid mutation issues
             try:
                 await connection.send_json(message)
-            except Exception:
+            except Exception as e:
                 # Client disconnected, mark for removal
+                print(f"[broadcast] Client disconnected: {e}", flush=True)
                 disconnected.append(connection)
 
         # Clean up disconnected clients
         for conn in disconnected:
             self.disconnect(conn)
+            print(f"[broadcast] Removed client, {len(self.active_connections)} remaining", flush=True)
 
     async def send_to(self, websocket: WebSocket, message: dict) -> None:
         """Send a JSON message to a specific client.

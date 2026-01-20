@@ -227,7 +227,8 @@ class WebMetricsCallback(BaseCallback):
             # Extract playable board area (20 rows x 10 cols)
             # tetris-gymnasium board includes padding: [0:20, 4:-4]
             if hasattr(unwrapped, "board"):
-                board = unwrapped.board[0:20, 4:-4].tolist()
+                # Convert to Python ints for JSON serialization
+                board = [[int(cell) for cell in row] for row in unwrapped.board[0:20, 4:-4]]
                 self.metrics_queue.put({
                     "type": "board",
                     "board": board,
@@ -243,14 +244,15 @@ class WebMetricsCallback(BaseCallback):
             recent = self.episode_rewards[-100:]  # Last 100 episodes
             avg_reward = sum(recent) / len(recent)
 
+        # Convert numpy types to native Python types for JSON serialization
         self.metrics_queue.put({
             "type": "metrics",
-            "timesteps": self.num_timesteps,
-            "episode_count": self.episode_count,
-            "current_score": self.current_episode_reward,
-            "lines_cleared": self.current_episode_lines,
-            "avg_reward": avg_reward,
-            "best_lines": self.best_lines,
+            "timesteps": int(self.num_timesteps),
+            "episode_count": int(self.episode_count),
+            "current_score": float(self.current_episode_reward),
+            "lines_cleared": int(self.current_episode_lines),
+            "avg_reward": float(avg_reward),
+            "best_lines": int(self.best_lines),
         })
 
     def _on_episode_end(self) -> None:
@@ -262,12 +264,12 @@ class WebMetricsCallback(BaseCallback):
         if self.current_episode_lines > self.best_lines:
             self.best_lines = self.current_episode_lines
 
-        # Send episode completion data
+        # Send episode completion data (convert numpy types for JSON)
         self.metrics_queue.put({
             "type": "episode",
-            "episode": self.episode_count,
-            "reward": self.current_episode_reward,
-            "lines": self.current_episode_lines,
+            "episode": int(self.episode_count),
+            "reward": float(self.current_episode_reward),
+            "lines": int(self.current_episode_lines),
         })
 
         # Reset for next episode

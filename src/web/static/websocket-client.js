@@ -17,7 +17,7 @@ class WebSocketClient {
         this.reconnectDelay = 1000;  // Start with 1 second
         this.maxReconnectDelay = 30000;  // Max 30 seconds
         this.reconnectAttempts = 0;
-        this.maxReconnectAttempts = 10;
+        this.maxReconnectAttempts = Infinity;  // Keep trying forever
         this.isIntentionallyClosed = false;
 
         this.connect();

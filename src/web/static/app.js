@@ -94,6 +94,11 @@ function handleMessage(data) {
             }
             break;
 
+        case 'ping':
+            // Keepalive ping from server - respond with pong
+            wsClient.send({ command: 'pong' });
+            break;
+
         default:
             console.log('Unknown message type:', data);
     }
