@@ -88,6 +88,10 @@ class ShapedRewardWrapper(RewardWrapper):
         self._prev_holes = self._count_holes(board)
         self._prev_height = self._get_max_height(board)
 
+        # Ensure observation dtype matches observation_space (fix upstream float64 issue)
+        if hasattr(obs, "dtype") and obs.dtype != self.observation_space.dtype:
+            obs = obs.astype(self.observation_space.dtype)
+
         return obs, info
 
     def step(self, action: Any) -> tuple[Any, float, bool, bool, dict[str, Any]]:
@@ -122,6 +126,10 @@ class ShapedRewardWrapper(RewardWrapper):
         # Update tracking state
         self._prev_holes = current_holes
         self._prev_height = current_height
+
+        # Ensure observation dtype matches observation_space (fix upstream float64 issue)
+        if hasattr(obs, "dtype") and obs.dtype != self.observation_space.dtype:
+            obs = obs.astype(self.observation_space.dtype)
 
         return obs, shaped_reward, terminated, truncated, info
 
