@@ -161,7 +161,7 @@ function updateMetricsDisplay(data) {
 
 /**
  * Update training status indicator and controls
- * @param {string} status - 'stopped', 'running', 'stopping'
+ * @param {string} status - 'stopped', 'running', 'paused', 'stopping'
  */
 function updateTrainingStatus(status) {
     currentStatus = status;
@@ -169,26 +169,60 @@ function updateTrainingStatus(status) {
     const indicator = document.getElementById('status-indicator');
     const statusText = document.getElementById('status-text');
     const btnStart = document.getElementById('btn-start');
+    const btnPause = document.getElementById('btn-pause');
     const btnStop = document.getElementById('btn-stop');
+    const modeToggle = document.getElementById('mode-toggle');
+    const speedSlider = document.getElementById('speed-slider');
     const configInputs = document.querySelectorAll('.config-item input');
 
     // Update status indicator
-    indicator.className = 'status ' + (status === 'stopping' ? 'paused' : status);
+    indicator.className = 'status ' + status;
     statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
 
-    // Update button states
-    btnStart.disabled = (status === 'running' || status === 'stopping');
-    btnStop.disabled = (status !== 'running');
+    // Update button states based on status
+    switch (status) {
+        case 'stopped':
+            btnStart.disabled = false;
+            btnPause.disabled = true;
+            btnPause.textContent = 'Pause';
+            btnStop.disabled = true;
+            modeToggle.disabled = false;
+            speedSlider.disabled = true;  // Only enabled in visual mode while running
+            break;
+
+        case 'running':
+            btnStart.disabled = true;
+            btnPause.disabled = false;
+            btnPause.textContent = 'Pause';
+            btnStop.disabled = false;
+            modeToggle.disabled = false;
+            // Speed slider enabled only if visual mode is on
+            speedSlider.disabled = !modeToggle.checked;
+            break;
+
+        case 'paused':
+            btnStart.disabled = true;
+            btnPause.disabled = false;
+            btnPause.textContent = 'Resume';
+            btnStop.disabled = false;
+            modeToggle.disabled = false;
+            speedSlider.disabled = !modeToggle.checked;
+            break;
+
+        case 'stopping':
+            btnStart.disabled = true;
+            btnPause.disabled = true;
+            btnStop.disabled = true;
+            modeToggle.disabled = true;
+            speedSlider.disabled = true;
+            break;
+    }
 
     // Disable config inputs while training
+    const isTraining = (status === 'running' || status === 'paused' || status === 'stopping');
     configInputs.forEach(input => {
-        input.disabled = (status === 'running' || status === 'stopping');
+        input.disabled = isTraining;
     });
-
-    // Clear board and chart when stopping
-    if (status === 'stopped') {
-        // Keep last state visible, don't clear
-    }
 }
 
 /**
@@ -196,8 +230,13 @@ function updateTrainingStatus(status) {
  */
 function setupControls() {
     const btnStart = document.getElementById('btn-start');
+    const btnPause = document.getElementById('btn-pause');
     const btnStop = document.getElementById('btn-stop');
+    const modeToggle = document.getElementById('mode-toggle');
+    const speedSlider = document.getElementById('speed-slider');
+    const speedValue = document.getElementById('speed-value');
 
+    // Start button
     btnStart.addEventListener('click', () => {
         // Get config values from inputs
         const targetLines = parseInt(document.getElementById('target-lines').value) || null;
@@ -221,6 +260,22 @@ function setupControls() {
         }
     });
 
+    // Pause/Resume button - toggles based on state
+    btnPause.addEventListener('click', () => {
+        if (currentStatus === 'running') {
+            const sent = wsClient.send({ command: 'pause' });
+            if (sent) {
+                console.log('Pause command sent');
+            }
+        } else if (currentStatus === 'paused') {
+            const sent = wsClient.send({ command: 'resume' });
+            if (sent) {
+                console.log('Resume command sent');
+            }
+        }
+    });
+
+    // Stop button
     btnStop.addEventListener('click', () => {
         const sent = wsClient.send({ command: 'stop' });
 
@@ -230,6 +285,35 @@ function setupControls() {
         } else {
             console.error('Failed to send stop command - not connected');
         }
+    });
+
+    // Mode toggle - headless vs visual
+    modeToggle.addEventListener('change', (e) => {
+        const visual = e.target.checked;
+        wsClient.send({
+            command: 'set_mode',
+            visual: visual
+        });
+        console.log(`Mode set to: ${visual ? 'visual' : 'headless'}`);
+
+        // Enable/disable speed slider based on mode
+        speedSlider.disabled = !visual;
+    });
+
+    // Speed slider - update display on input
+    speedSlider.addEventListener('input', (e) => {
+        const speed = parseFloat(e.target.value);
+        speedValue.textContent = speed.toFixed(1) + 'x';
+    });
+
+    // Speed slider - send command on change (not every input for less WebSocket traffic)
+    speedSlider.addEventListener('change', (e) => {
+        const speed = parseFloat(e.target.value);
+        wsClient.send({
+            command: 'set_speed',
+            speed: speed
+        });
+        console.log(`Speed set to: ${speed}`);
     });
 }
 
