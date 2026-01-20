@@ -164,8 +164,12 @@ async def websocket_endpoint(websocket: WebSocket):
 
     Accepts connections, receives JSON commands, and broadcasts metrics.
     Commands:
-        - {"command": "start"}: Start training
+        - {"command": "start", "config": {...}}: Start training
         - {"command": "stop"}: Stop training
+        - {"command": "pause"}: Pause training
+        - {"command": "resume"}: Resume training
+        - {"command": "set_mode", "visual": true/false}: Toggle headless/visual mode
+        - {"command": "set_speed", "speed": 0.1-1.0}: Set visualization speed
         - {"command": "status"}: Get current status
     """
     await connection_manager.connect(websocket)
@@ -221,6 +225,64 @@ async def websocket_endpoint(websocket: WebSocket):
                         "type": "status",
                         "status": "stopped",
                         "message": "Training stopped",
+                    },
+                )
+            elif command == "pause":
+                if training_manager.pause_training():
+                    await connection_manager.send_to(
+                        websocket,
+                        {
+                            "type": "status",
+                            "status": "paused",
+                            "message": "Training paused",
+                        },
+                    )
+                else:
+                    await connection_manager.send_to(
+                        websocket,
+                        {
+                            "type": "error",
+                            "error": "Cannot pause - training not running",
+                        },
+                    )
+            elif command == "resume":
+                if training_manager.resume_training():
+                    await connection_manager.send_to(
+                        websocket,
+                        {
+                            "type": "status",
+                            "status": "running",
+                            "message": "Training resumed",
+                        },
+                    )
+                else:
+                    await connection_manager.send_to(
+                        websocket,
+                        {
+                            "type": "error",
+                            "error": "Cannot resume - training not paused",
+                        },
+                    )
+            elif command == "set_mode":
+                visual = data.get("visual", False)
+                training_manager.set_mode(visual)
+                await connection_manager.send_to(
+                    websocket,
+                    {
+                        "type": "info",
+                        "message": f"Mode change requested: {'visual' if visual else 'headless'}",
+                    },
+                )
+            elif command == "set_speed":
+                speed = data.get("speed", 1.0)
+                # Clamp speed to valid range
+                speed = max(0.1, min(1.0, float(speed)))
+                training_manager.set_speed(speed)
+                await connection_manager.send_to(
+                    websocket,
+                    {
+                        "type": "info",
+                        "message": f"Speed set to {speed:.1f}x",
                     },
                 )
             elif command == "status":
