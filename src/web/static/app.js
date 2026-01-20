@@ -75,6 +75,10 @@ function handleMessage(data) {
             // Training status changed
             if (data.status) {
                 updateTrainingStatus(data.status);
+                // Notify ModelManager of status changes
+                if (modelManager) {
+                    modelManager.handleStatus(data);
+                }
             }
             // Sync control state from server (on reconnect)
             if (data.visual_mode !== undefined) {
@@ -135,6 +139,12 @@ function handleConnectionStatus(status) {
             statusText.textContent = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
             // Request current status from server
             wsClient.send({ command: 'status' });
+            // Initialize ModelManager if not already done
+            if (!modelManager && wsClient) {
+                modelManager = new ModelManager(wsClient);
+            } else if (modelManager) {
+                modelManager.loadModels();  // Refresh on reconnect
+            }
             break;
 
         case 'disconnected':
@@ -230,12 +240,20 @@ function updateTrainingStatus(status) {
             modeToggle.disabled = true;
             speedSlider.disabled = true;
             break;
+
+        case 'demo_running':
+            btnStart.disabled = true;  // Can't start training during demo
+            btnPause.disabled = true;
+            btnStop.disabled = false;  // Stop button works for demo too
+            modeToggle.disabled = true;  // Mode toggle not applicable in demo
+            speedSlider.disabled = false;  // Speed works in demo
+            break;
     }
 
-    // Disable config inputs while training
-    const isTraining = (status === 'running' || status === 'paused' || status === 'stopping');
+    // Disable config inputs while training or demo
+    const isActive = (status === 'running' || status === 'paused' || status === 'stopping' || status === 'demo_running');
     configInputs.forEach(input => {
-        input.disabled = isTraining;
+        input.disabled = isActive;
     });
 }
 
@@ -295,9 +313,14 @@ function setupControls() {
         }
     });
 
-    // Stop button
+    // Stop button - works for both training and demo
     btnStop.addEventListener('click', () => {
+        // Send stop for training
         const sent = wsClient.send({ command: 'stop' });
+        // Also send demo_stop in case it's a demo
+        if (modelManager && modelManager.currentDemo) {
+            wsClient.send({ command: 'demo_stop' });
+        }
 
         if (sent) {
             console.log('Stop command sent');
@@ -343,4 +366,5 @@ window.app = {
     metricsChart: () => metricsChart,
     wsClient: () => wsClient,
     status: () => currentStatus,
+    modelManager: () => modelManager,
 };
