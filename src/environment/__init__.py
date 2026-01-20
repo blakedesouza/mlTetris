@@ -1,6 +1,12 @@
-# Environment module - exports factory function
-# Factory function will be implemented in Plan 01-02
+# Environment module - exports factory functions and configuration
 
+from .config import EnvConfig
+from .tetris_env import create_tetris_env, make_env
 from .wrappers import ShapedRewardWrapper
 
-__all__ = ["ShapedRewardWrapper"]
+__all__ = [
+    "create_tetris_env",
+    "make_env",
+    "EnvConfig",
+    "ShapedRewardWrapper",
+]
