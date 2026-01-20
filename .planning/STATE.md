@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2025-01-19)
 
 **Core value:** Watch an AI visibly improve at Tetris with full control over training and model management
-**Current focus:** Phase 3 - Web Visualization (next)
+**Current focus:** Phase 3 - Web Visualization (in progress)
 
 ## Current Position
 
-Phase: 2 of 5 (Training Core)
-Plan: 3 of 3 in current phase
-Status: Complete (verified)
-Last activity: 2026-01-20 - Phase 2 executed and verified
+Phase: 3 of 5 (Web Visualization)
+Plan: 2 of 4 in current phase
+Status: In progress
+Last activity: 2026-01-20 - Completed 03-02-PLAN.md (Frontend Assets)
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 7.2 min
-- Total execution time: 36 min
+- Total plans completed: 6
+- Average duration: 6.7 min
+- Total execution time: 40 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [████░░░░░░] 40%
 |-------|-------|-------|----------|
 | 01-environment-foundation | 2 | 17 min | 8.5 min |
 | 02-training-core | 3 | 19 min | 6.3 min |
+| 03-web-visualization | 1 | 4 min | 4.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (9 min), 01-02 (8 min), 02-01 (2 min), 02-02 (4 min), 02-03 (13 min)
+- Last 5 plans: 01-02 (8 min), 02-01 (2 min), 02-02 (4 min), 02-03 (13 min), 03-02 (4 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -53,6 +54,8 @@ Recent decisions affecting current work:
 - **Callback coordination**: LinesTrackingCallback provides data, GoalReachedCallback queries it
 - **Checkpoint resume pattern**: Check for 'latest' directory existence before starting training
 - **Baseline comparison threshold**: 25k timesteps with soft 0.9x threshold for statistical robustness
+- **Chart.js via CDN**: Simpler than npm bundling for single-page dashboard
+- **Manual Chart.js updates**: chartjs-plugin-streaming unmaintained, manual update() more reliable
 
 ### Pending Todos
 
@@ -69,9 +72,10 @@ Research flags from SUMMARY.md:
 - TrainingConfig and TetrisAgent created with checkpoint support
 - Training callbacks and headless training function complete
 - **Phase 2 complete:** Test suite verifies all requirements, trained agent outperforms random baseline
+- Frontend assets created: HTML template, CSS styling, JS modules for Canvas and Chart.js
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Phase 2 complete, ready to plan Phase 3
+Stopped at: Completed 03-02-PLAN.md (Frontend Assets)
 Resume file: None
