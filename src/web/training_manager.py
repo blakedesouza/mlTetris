@@ -33,6 +33,10 @@ class TrainingManager:
         self.process: Optional[Process] = None
         self.status: str = "stopped"
 
+        # Control state (tracked for UI sync on reconnect)
+        self.visual_mode: bool = False
+        self.speed: float = 1.0
+
         # Initialize events to correct state
         self.pause_event.set()  # Not paused (set = unblocked)
         self.stop_event.clear()  # Not stopped
@@ -54,9 +58,11 @@ class TrainingManager:
         self._clear_queue(self.metrics_queue)
         self._clear_queue(self.command_queue)
 
-        # Reset events for new session
+        # Reset events and control state for new session
         self.pause_event.set()  # Not paused
         self.stop_event.clear()  # Not stopped
+        self.visual_mode = False
+        self.speed = 1.0
 
         self.process = Process(
             target=self._training_worker,
@@ -131,6 +137,7 @@ class TrainingManager:
         Args:
             visual: True for visual mode (send board updates), False for headless.
         """
+        self.visual_mode = visual
         self.command_queue.put({"command": "set_mode", "visual": visual})
 
     def set_speed(self, speed: float) -> None:
@@ -141,6 +148,7 @@ class TrainingManager:
         Args:
             speed: Speed factor from 0.1 (slowest) to 1.0 (fastest).
         """
+        self.speed = speed
         self.command_queue.put({"command": "set_speed", "speed": speed})
 
     def is_running(self) -> bool:
@@ -155,11 +163,13 @@ class TrainingManager:
         """Get current training status.
 
         Returns:
-            Dictionary with status and process info.
+            Dictionary with status, process info, and control state.
         """
         return {
             "status": self.status,
             "is_running": self.is_running(),
+            "visual_mode": self.visual_mode,
+            "speed": self.speed,
         }
 
     @staticmethod

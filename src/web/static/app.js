@@ -76,6 +76,20 @@ function handleMessage(data) {
             if (data.status) {
                 updateTrainingStatus(data.status);
             }
+            // Sync control state from server (on reconnect)
+            if (data.visual_mode !== undefined) {
+                const modeToggle = document.getElementById('mode-toggle');
+                modeToggle.checked = data.visual_mode;
+                // Update speed slider enabled state
+                const speedSlider = document.getElementById('speed-slider');
+                speedSlider.disabled = !data.visual_mode || data.status === 'stopped';
+            }
+            if (data.speed !== undefined) {
+                const speedSlider = document.getElementById('speed-slider');
+                const speedValue = document.getElementById('speed-value');
+                speedSlider.value = data.speed;
+                speedValue.textContent = data.speed.toFixed(1) + 'x';
+            }
             if (data.message) {
                 console.log(`Server: ${data.message}`);
             }
@@ -255,6 +269,12 @@ function setupControls() {
             console.log('Start command sent');
             updateTrainingStatus('running');
             metricsChart.clear();  // Clear chart for new training session
+
+            // Sync visual mode and speed if visual is checked
+            if (modeToggle.checked) {
+                wsClient.send({ command: 'set_mode', visual: true });
+                wsClient.send({ command: 'set_speed', speed: parseFloat(speedSlider.value) });
+            }
         } else {
             console.error('Failed to send start command - not connected');
         }

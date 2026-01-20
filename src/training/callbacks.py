@@ -266,9 +266,9 @@ class WebMetricsCallback(BaseCallback):
                         "message": f"Mode: {'visual' if self.visual_mode else 'headless'}"
                     })
                 elif command == "set_speed":
-                    # Speed 1.0 = no delay, 0.1 = max delay (100ms between steps)
+                    # Speed 1.0 = no delay, 0.1 = max delay (500ms between board updates)
                     speed = max(0.1, min(1.0, cmd.get("speed", 1.0)))
-                    self.step_delay = (1.0 - speed) * 0.1
+                    self.step_delay = (1.0 - speed) * 0.5
         except Exception:
             pass
 
