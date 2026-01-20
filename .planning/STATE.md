@@ -12,16 +12,16 @@ See: .planning/PROJECT.md (updated 2025-01-19)
 Phase: 3 of 5 (Web Visualization)
 Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-20 - Completed 03-04-PLAN.md (Frontend WebSocket Integration)
+Last activity: 2026-01-20 - Completed 03-03-PLAN.md (Training-to-Web Integration)
 
-Progress: [██████░░░░] 57%
+Progress: [██████░░░░] 64%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 6.4 min
-- Total execution time: 52 min
+- Total execution time: 58 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [██████░░░░] 57%
 |-------|-------|-------|----------|
 | 01-environment-foundation | 2 | 17 min | 8.5 min |
 | 02-training-core | 3 | 19 min | 6.3 min |
-| 03-web-visualization | 3 | 16 min | 5.3 min |
+| 03-web-visualization | 4 | 22 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (4 min), 02-03 (13 min), 03-02 (4 min), 03-01 (8 min), 03-04 (4 min)
+- Last 5 plans: 02-03 (13 min), 03-02 (4 min), 03-01 (8 min), 03-04 (4 min), 03-03 (6 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -60,6 +60,7 @@ Recent decisions affecting current work:
 - **Queue-based IPC**: metrics_queue and command_queue for bidirectional communication
 - **WebSocket auto-reconnect**: 10 max attempts with exponential backoff (1s to 30s max)
 - **Message types**: board, metrics, episode, status, info, error for frontend routing
+- **Board state extraction in callback**: Navigate through wrappers to unwrapped env, extract board[0:20, 4:-4]
 
 ### Pending Todos
 
@@ -79,9 +80,10 @@ Research flags from SUMMARY.md:
 - Frontend assets created: HTML template, CSS styling, JS modules for Canvas and Chart.js
 - FastAPI server with WebSocket endpoint, TrainingManager with process isolation
 - **Frontend wiring complete:** WebSocketClient connects, routes messages to GameBoard.render() and MetricsChart.addDataPoint()
+- **Training-web integration complete:** WebMetricsCallback sends metrics/board via Queue, TrainingManager._training_worker runs full training loop
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 03-04-PLAN.md (Frontend WebSocket Integration)
+Stopped at: Completed 03-03-PLAN.md (Training-to-Web Integration)
 Resume file: None
