@@ -321,3 +321,120 @@ class TrainingManager:
                 "type": "status",
                 "status": "stopped",
             })
+
+    @staticmethod
+    def _demo_worker(
+        model_path: str,
+        metrics_queue: Queue,
+        command_queue: Queue,
+        stop_event: "EventType",
+    ) -> None:
+        """Worker function for demo mode - inference only, no training.
+
+        Runs the model in evaluation mode, sending board state for visualization.
+        Handles speed commands but not pause (demo is always visual).
+
+        Args:
+            model_path: Path to model.zip file to load.
+            metrics_queue: Queue to send metrics/board to server.
+            command_queue: Queue to receive commands from server.
+            stop_event: Event for stop signal.
+        """
+        import time
+
+        try:
+            from src.environment import make_env, EnvConfig
+            from stable_baselines3 import DQN
+
+            # Create environment (headless - we extract board state manually)
+            env_config = EnvConfig(render_mode=None)
+            env = make_env(env_config)()
+
+            # Load model for inference (no TetrisAgent needed)
+            model = DQN.load(model_path, env=env)
+            model.set_training_mode(False)
+
+            metrics_queue.put({"type": "status", "status": "demo_running"})
+
+            obs, _ = env.reset()
+            episode = 0
+            episode_reward = 0.0
+            episode_lines = 0
+            step_delay = 0.1  # Default demo speed (fairly slow for watching)
+            steps_in_episode = 0
+
+            while not stop_event.is_set():
+                # Check for speed commands
+                try:
+                    while not command_queue.empty():
+                        cmd = command_queue.get_nowait()
+                        if cmd.get("command") == "set_speed":
+                            speed = cmd.get("speed", 1.0)
+                            # Convert speed (0.1-1.0) to delay (0.5s - 0s)
+                            step_delay = (1.0 - speed) * 0.5
+                except Exception:
+                    pass
+
+                # Predict action deterministically (no exploration)
+                action, _ = model.predict(obs, deterministic=True)
+                obs, reward, terminated, truncated, info = env.step(action)
+
+                episode_reward += float(reward)
+                steps_in_episode += 1
+
+                # Track lines cleared
+                lines = info.get("lines", info.get("lines_cleared", 0))
+                if lines > episode_lines:
+                    episode_lines = lines
+
+                # Extract and send board state
+                # Navigate through wrappers to get board
+                try:
+                    unwrapped = env.unwrapped
+                    if hasattr(unwrapped, 'board'):
+                        # Extract playable area (20 rows, 10 cols)
+                        board = unwrapped.board[0:20, 4:-4]
+                        metrics_queue.put({
+                            "type": "board",
+                            "board": board.tolist(),
+                        })
+                except Exception:
+                    pass  # Skip board update on error
+
+                # Send periodic metrics
+                if steps_in_episode % 10 == 0:
+                    metrics_queue.put({
+                        "type": "metrics",
+                        "episode_count": episode,
+                        "current_score": episode_reward,
+                        "lines_cleared": episode_lines,
+                    })
+
+                if terminated or truncated:
+                    episode += 1
+                    metrics_queue.put({
+                        "type": "episode",
+                        "episode": episode,
+                        "reward": episode_reward,
+                        "lines": episode_lines,
+                    })
+                    # Reset for next episode
+                    obs, _ = env.reset()
+                    episode_reward = 0.0
+                    episode_lines = 0
+                    steps_in_episode = 0
+
+                # Delay for visualization
+                if step_delay > 0:
+                    time.sleep(step_delay)
+
+            metrics_queue.put({"type": "status", "status": "stopped"})
+
+        except Exception as e:
+            import traceback as tb
+            metrics_queue.put({
+                "type": "error",
+                "error": str(e),
+                "traceback": tb.format_exc(),
+            })
+            metrics_queue.put({"type": "status", "status": "stopped"})
