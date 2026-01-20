@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2025-01-19)
 
 **Core value:** Watch an AI visibly improve at Tetris with full control over training and model management
-**Current focus:** Phase 4 complete - Training Controls
+**Current focus:** Phase 5 in progress - Model Management & Polish
 
 ## Current Position
 
-Phase: 4 of 5 (Training Controls)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-20 - Completed 04-03-PLAN.md (Frontend Control Wiring)
+Phase: 5 of 5 (Model Management & Polish)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-20 - Completed 05-01-PLAN.md (Model Slot Backend)
 
-Progress: [█████████░] 86%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 6.3 min
-- Total execution time: 76 min
+- Total plans completed: 13
+- Average duration: 6.4 min
+- Total execution time: 83 min
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [█████████░] 86%
 | 02-training-core | 3 | 19 min | 6.3 min |
 | 03-web-visualization | 4 | 22 min | 5.5 min |
 | 04-training-controls | 3 | 18 min | 6 min |
+| 05-model-management-polish | 1 | 7 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (4 min), 03-03 (6 min), 04-01 (8 min), 04-02 (4 min), 04-03 (6 min)
+- Last 5 plans: 03-03 (6 min), 04-01 (8 min), 04-02 (4 min), 04-03 (6 min), 05-01 (7 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - **Execution order in callback**: Check stop -> process commands -> wait on pause -> check stop again
 - **State sync on reconnect**: TrainingManager tracks visual_mode/speed, includes in status response
 - **Pre-checked settings sync**: Send set_mode/set_speed after start if visual mode checkbox checked
+- **Model slots location**: checkpoints/slots/ with model.zip + metadata.json (no replay buffer)
+- **Slot name validation**: Alphanumeric, underscore, hyphen only
+- **Demo mode pattern**: REST + WebSocket dual interface for one-off and real-time commands
 
 ### Pending Todos
 
@@ -93,9 +97,10 @@ Research flags from SUMMARY.md:
 - **Controls UI integration complete:** WebSocket command handlers and HTML/CSS UI controls for pause/mode/speed
 - **Frontend control wiring complete:** Event handlers wired to WebSocket commands, state sync on reconnect
 - **Phase 4 complete:** All training controls working end-to-end (pause/resume, mode toggle, speed slider, auto-save best)
+- **Model slot backend complete:** ModelSlotManager with CRUD+export, REST endpoints, WebSocket demo commands
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 04-03-PLAN.md (Frontend Control Wiring) - Phase 4 complete
+Stopped at: Completed 05-01-PLAN.md (Model Slot Backend)
 Resume file: None
