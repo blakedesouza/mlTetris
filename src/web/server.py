@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from .connection_manager import ConnectionManager
 from .training_manager import TrainingManager
+from src.training.model_slots import ModelSlotManager
 
 
 # FastAPI application
@@ -29,6 +30,7 @@ app.add_middleware(
 # Module-level instances
 connection_manager = ConnectionManager()
 training_manager = TrainingManager()
+model_manager = ModelSlotManager()
 
 # Paths for static files and templates
 WEB_DIR = Path(__file__).parent
@@ -52,6 +54,20 @@ class TrainingConfigRequest(BaseModel):
     target_lines: Optional[int] = None
     learning_rate: float = 1e-4
     checkpoint_dir: str = "./checkpoints"
+
+
+class SaveSlotRequest(BaseModel):
+    """Request body for saving model to slot."""
+
+    source: str = "best"  # "best", "latest", or "final"
+    slot_name: str
+
+
+class ExportRequest(BaseModel):
+    """Request body for exporting model."""
+
+    slot_name: str
+    filename: str  # Just the filename, will be saved to exports/
 
 
 # Background task for metrics polling
@@ -155,6 +171,72 @@ async def stop_training():
     """
     training_manager.stop_training()
     return {"success": True, "message": "Training stopped"}
+
+
+# Model management endpoints
+@app.get("/api/models")
+async def list_models():
+    """List all saved model slots with metadata."""
+    return model_manager.list_slots()
+
+
+@app.post("/api/models/save")
+async def save_model(request: SaveSlotRequest):
+    """Save current model to named slot."""
+    # Validate source is one of best/latest/final
+    if request.source not in ("best", "latest", "final"):
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "error": "Invalid source. Use: best, latest, final"},
+        )
+    success = model_manager.save_to_slot(request.source, request.slot_name)
+    if success:
+        return {"success": True, "message": f"Model saved to slot '{request.slot_name}'"}
+    return JSONResponse(
+        status_code=404,
+        content={"success": False, "error": f"Source '{request.source}' not found"},
+    )
+
+
+@app.delete("/api/models/{slot_name}")
+async def delete_model(slot_name: str):
+    """Delete a saved model slot."""
+    success = model_manager.delete_slot(slot_name)
+    if success:
+        return {"success": True, "message": f"Slot '{slot_name}' deleted"}
+    return JSONResponse(
+        status_code=404,
+        content={"success": False, "error": f"Slot '{slot_name}' not found"},
+    )
+
+
+@app.post("/api/models/export")
+async def export_model(request: ExportRequest):
+    """Export model to standalone file for download."""
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+
+    # Create exports directory
+    exports_dir = Path("./exports")
+    exports_dir.mkdir(exist_ok=True)
+    export_path = exports_dir / request.filename
+
+    # Run in thread pool to avoid blocking
+    loop = asyncio.get_event_loop()
+    executor = ThreadPoolExecutor(max_workers=1)
+    success = await loop.run_in_executor(
+        executor,
+        model_manager.export_model,
+        request.slot_name,
+        str(export_path),
+    )
+
+    if success:
+        return {"success": True, "path": str(export_path), "message": f"Model exported to {export_path}"}
+    return JSONResponse(
+        status_code=404,
+        content={"success": False, "error": f"Slot '{request.slot_name}' not found"},
+    )
 
 
 # WebSocket endpoint
