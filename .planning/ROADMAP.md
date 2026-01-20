@@ -46,11 +46,12 @@ Plans:
   3. User can configure target lines-to-clear goal before training starts
   4. Checkpoints can be saved during training and loaded to resume later
   5. Resumed training continues from exact state (optimizer, replay buffer, epsilon preserved)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Training configuration and TetrisAgent wrapper with checkpoint support
+- [ ] 02-02-PLAN.md — Callbacks (goal-based stopping, lines tracking) and headless training function
+- [ ] 02-03-PLAN.md — Test suite and end-to-end training verification
 
 ### Phase 3: Web Visualization
 **Goal**: Deliver a web dashboard where users can watch AI play, view metrics, and control training
@@ -109,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Environment Foundation | 2/2 | Complete | 2025-01-20 |
-| 2. Training Core | 0/TBD | Not started | - |
+| 2. Training Core | 0/3 | Not started | - |
 | 3. Web Visualization | 0/TBD | Not started | - |
 | 4. Training Controls | 0/TBD | Not started | - |
 | 5. Model Management & Polish | 0/TBD | Not started | - |
@@ -117,4 +118,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 ---
 *Roadmap created: 2025-01-19*
 *Phase 1 planned: 2025-01-20*
+*Phase 2 planned: 2025-01-20*
 *Coverage: 29/29 v1 requirements mapped*
