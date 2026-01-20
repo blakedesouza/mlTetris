@@ -105,6 +105,34 @@
                     <input type="number" id="max-timesteps" value="100000" min="1000" step="1000">
                 </div>
             </div>
+
+            <div class="model-section">
+                <h3>Saved Models</h3>
+
+                <div class="model-actions">
+                    <button id="btn-save-model" class="btn btn-secondary">Save Current Model</button>
+                    <button id="btn-refresh-models" class="btn btn-secondary">Refresh</button>
+                </div>
+
+                <div class="model-table-container">
+                    <table class="model-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="name">Name</th>
+                                <th class="sortable" data-sort="lines">Best Lines</th>
+                                <th class="sortable" data-sort="timesteps">Timesteps</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="model-list">
+                            <!-- Populated by JavaScript -->
+                            <tr class="empty-row">
+                                <td colspan="4">No saved models yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
     </main>
 
@@ -116,6 +144,7 @@
     <script src="/static/game-board.js"></script>
     <script src="/static/metrics-chart.js"></script>
     <script src="/static/websocket-client.js"></script>
+    <script src="/static/model-manager.js"></script>
     <script src="/static/app.js"></script>
 </body>
 </html>
