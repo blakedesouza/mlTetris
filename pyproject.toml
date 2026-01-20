@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-tetris"
+version = "0.1.0"
+description = "Reinforcement learning Tetris trainer with web interface"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Blake"}
+]
+
+dependencies = [
+    "tetris-gymnasium>=0.2.1",
+    "gymnasium>=1.0.0",
+    "numpy>=1.24,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "stable-baselines3>=2.4.0",
+    "pytest>=7.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
