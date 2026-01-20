@@ -1,0 +1,10 @@
+{
+  "workflow": {
+    "mode": "yolo",
+    "depth": "comprehensive",
+    "parallelization": true,
+    "commit_docs": true
+  },
+  "created": "2025-01-19",
+  "version": "1.0"
+}
