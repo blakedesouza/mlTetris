@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Environment Foundation** - Gymnasium-compatible Tetris with feature-based state and shaped rewards
 - [x] **Phase 2: Training Core** - DQN agent with experience replay, headless training, and checkpointing
-- [ ] **Phase 3: Web Visualization** - Live dashboard with game board, metrics, and start/stop controls
+- [x] **Phase 3: Web Visualization** - Live dashboard with game board, metrics, and start/stop controls
 - [ ] **Phase 4: Training Controls** - Pause/resume, headless/visual toggle, and speed control
 - [ ] **Phase 5: Model Management & Polish** - Multiple model slots, comparison view, and demo mode
 
@@ -68,11 +68,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — FastAPI server with WebSocket support and TrainingManager with process isolation
-- [ ] 03-02-PLAN.md — Frontend static assets: HTML template, CSS styles, JavaScript modules
-- [ ] 03-03-PLAN.md — Training-web integration: WebMetricsCallback and board state extraction
-- [ ] 03-04-PLAN.md — Frontend functionality: WebSocket client, Canvas rendering, Chart.js wiring
-- [ ] 03-05-PLAN.md — Server command handling and end-to-end integration verification
+- [x] 03-01-PLAN.md — FastAPI server with WebSocket support and TrainingManager with process isolation
+- [x] 03-02-PLAN.md — Frontend static assets: HTML template, CSS styles, JavaScript modules
+- [x] 03-03-PLAN.md — Training-web integration: WebMetricsCallback and board state extraction
+- [x] 03-04-PLAN.md — Frontend functionality: WebSocket client, Canvas rendering, Chart.js wiring
+- [x] 03-05-PLAN.md — Server command handling and end-to-end integration verification
 
 ### Phase 4: Training Controls
 **Goal**: Deliver fine-grained training control including pause/resume, mode toggle, and speed adjustment
@@ -83,11 +83,12 @@ Plans:
   2. User can pause training mid-session and resume from exact state
   3. User can adjust game speed during visual mode to watch faster or slower
   4. Best model auto-saves when new high score is achieved during training
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Backend Event-based pause/resume and enhanced WebMetricsCallback with controls
+- [ ] 04-02-PLAN.md — WebSocket command handlers and frontend UI control elements
+- [ ] 04-03-PLAN.md — Frontend control wiring and end-to-end verification
 
 ### Phase 5: Model Management & Polish
 **Goal**: Deliver model comparison features and demo mode for showcasing trained models
@@ -113,8 +114,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Environment Foundation | 2/2 | Complete | 2025-01-20 |
 | 2. Training Core | 3/3 | Complete | 2026-01-20 |
-| 3. Web Visualization | 0/5 | Planned | - |
-| 4. Training Controls | 0/TBD | Not started | - |
+| 3. Web Visualization | 5/5 | Complete | 2026-01-20 |
+| 4. Training Controls | 0/3 | Planned | - |
 | 5. Model Management & Polish | 0/TBD | Not started | - |
 
 ---
@@ -122,4 +123,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 *Phase 1 planned: 2025-01-20*
 *Phase 2 planned: 2025-01-20*
 *Phase 3 planned: 2026-01-20*
+*Phase 4 planned: 2026-01-20*
 *Coverage: 29/29 v1 requirements mapped*
