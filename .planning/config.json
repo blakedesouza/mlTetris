@@ -5,6 +5,29 @@
     "parallelization": true,
     "commit_docs": true
   },
+  "models": {
+    "_profile": "balanced",
+    "haiku": [
+      "Explore",
+      "gsd-codebase-mapper",
+      "test-runner"
+    ],
+    "sonnet": [
+      "gsd-executor",
+      "gsd-verifier",
+      "gsd-integration-checker",
+      "gsd-debugger",
+      "general-purpose"
+    ],
+    "opus": [
+      "gsd-planner",
+      "gsd-plan-checker",
+      "gsd-roadmapper",
+      "gsd-phase-researcher",
+      "gsd-project-researcher",
+      "gsd-research-synthesizer"
+    ]
+  },
   "created": "2025-01-19",
   "version": "1.0"
 }

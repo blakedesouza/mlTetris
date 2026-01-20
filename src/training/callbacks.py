@@ -284,8 +284,16 @@ class WebMetricsCallback(BaseCallback):
 
             # Extract playable board area (20 rows x 10 cols)
             # tetris-gymnasium board includes padding: [0:20, 4:-4]
-            if hasattr(unwrapped, "board"):
-                # Convert to Python ints for JSON serialization
+            # Use project_tetromino() to include active piece if available
+            if hasattr(unwrapped, "project_tetromino"):
+                full_board = unwrapped.project_tetromino()
+                board = [[int(cell) for cell in row] for row in full_board[0:20, 4:-4]]
+                self.metrics_queue.put({
+                    "type": "board",
+                    "board": board,
+                })
+            elif hasattr(unwrapped, "board"):
+                # Fallback to static board without piece
                 board = [[int(cell) for cell in row] for row in unwrapped.board[0:20, 4:-4]]
                 self.metrics_queue.put({
                     "type": "board",

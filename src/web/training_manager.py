@@ -186,11 +186,11 @@ class TrainingManager:
             model_path: Path to model.zip file to load.
 
         Returns:
-            True if demo started, False if training/demo already running.
+            True if demo started, False if demo already running.
         """
-        # Prevent demo if training is running
+        # Stop training first if running (auto-transition to demo)
         if self.is_running():
-            return False
+            self.stop_training()
         # Prevent if demo already running
         if self.is_demo_running():
             return False
@@ -395,8 +395,8 @@ class TrainingManager:
             env = make_env(env_config)()
 
             # Load model for inference (no TetrisAgent needed)
+            # deterministic=True is passed to predict() below, no need for training mode toggle
             model = DQN.load(model_path, env=env)
-            model.set_training_mode(False)
 
             metrics_queue.put({"type": "status", "status": "demo_running"})
 
@@ -426,41 +426,52 @@ class TrainingManager:
                 episode_reward += float(reward)
                 steps_in_episode += 1
 
-                # Track lines cleared
-                lines = info.get("lines", info.get("lines_cleared", 0))
+                # Track lines cleared (convert to int for JSON)
+                lines = int(info.get("lines", info.get("lines_cleared", 0)))
                 if lines > episode_lines:
                     episode_lines = lines
 
                 # Extract and send board state
-                # Navigate through wrappers to get board
+                # Navigate through wrappers to get board with active piece
                 try:
                     unwrapped = env.unwrapped
-                    if hasattr(unwrapped, 'board'):
+                    if hasattr(unwrapped, 'project_tetromino'):
+                        # project_tetromino() returns board with active piece rendered
+                        full_board = unwrapped.project_tetromino()
                         # Extract playable area (20 rows, 10 cols)
-                        board = unwrapped.board[0:20, 4:-4]
+                        # Convert to Python ints for JSON serialization
+                        board = [[int(cell) for cell in row] for row in full_board[0:20, 4:-4]]
                         metrics_queue.put({
                             "type": "board",
-                            "board": board.tolist(),
+                            "board": board,
+                        })
+                    elif hasattr(unwrapped, 'board'):
+                        # Fallback to static board without piece
+                        board = [[int(cell) for cell in row] for row in unwrapped.board[0:20, 4:-4]]
+                        metrics_queue.put({
+                            "type": "board",
+                            "board": board,
                         })
                 except Exception:
                     pass  # Skip board update on error
 
-                # Send periodic metrics
+                # Send periodic demo metrics (separate from training)
                 if steps_in_episode % 10 == 0:
                     metrics_queue.put({
-                        "type": "metrics",
-                        "episode_count": episode,
-                        "current_score": episode_reward,
-                        "lines_cleared": episode_lines,
+                        "type": "demo_metrics",
+                        "episode": int(episode),
+                        "score": float(episode_reward),
+                        "lines": int(episode_lines),
+                        "steps": int(steps_in_episode),
                     })
 
                 if terminated or truncated:
                     episode += 1
                     metrics_queue.put({
-                        "type": "episode",
-                        "episode": episode,
-                        "reward": episode_reward,
-                        "lines": episode_lines,
+                        "type": "demo_episode",
+                        "episode": int(episode),
+                        "reward": float(episode_reward),
+                        "lines": int(episode_lines),
                     })
                     # Reset for next episode
                     obs, _ = env.reset()

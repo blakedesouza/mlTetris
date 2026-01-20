@@ -24,7 +24,7 @@
             <div class="game-container">
                 <canvas id="game-board" width="300" height="600"></canvas>
             </div>
-            <div class="game-info">
+            <div class="game-info" id="training-info">
                 <div class="info-item">
                     <span class="label">Score:</span>
                     <span id="current-score">0</span>
@@ -36,6 +36,20 @@
                 <div class="info-item">
                     <span class="label">Episode:</span>
                     <span id="episode-count">0</span>
+                </div>
+            </div>
+            <div class="game-info demo-info" id="demo-info" style="display: none;">
+                <div class="info-item">
+                    <span class="label">Demo Episode:</span>
+                    <span id="demo-episode">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Score:</span>
+                    <span id="demo-score">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Lines:</span>
+                    <span id="demo-lines">0</span>
                 </div>
             </div>
         </section>
@@ -103,6 +117,13 @@
                 <div class="config-item">
                     <label for="max-timesteps">Max Timesteps:</label>
                     <input type="number" id="max-timesteps" value="100000" min="1000" step="1000">
+                </div>
+                <div class="config-item checkbox-item">
+                    <label>
+                        <input type="checkbox" id="train-until-target">
+                        Train until target lines reached
+                    </label>
+                    <p class="hint">Ignores max timesteps, keeps training until goal</p>
                 </div>
             </div>
 

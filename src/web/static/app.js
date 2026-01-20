@@ -71,6 +71,16 @@ function handleMessage(data) {
             }
             break;
 
+        case 'demo_metrics':
+            // Demo mode metrics - update demo display only
+            updateDemoDisplay(data);
+            break;
+
+        case 'demo_episode':
+            // Demo episode completed - just update display, don't chart
+            updateDemoDisplay(data);
+            break;
+
         case 'status':
             // Training status changed
             if (data.status) {
@@ -105,11 +115,13 @@ function handleMessage(data) {
             break;
 
         case 'error':
-            // Error from training
-            console.error(`Training error: ${data.error}`);
+            // Error from server - show to user
+            console.error(`Server error: ${data.error}`);
             if (data.traceback) {
                 console.error(data.traceback);
             }
+            // Show error to user
+            alert(`Error: ${data.error || data.message || 'Unknown error'}`);
             break;
 
         case 'ping':
@@ -255,6 +267,45 @@ function updateTrainingStatus(status) {
     configInputs.forEach(input => {
         input.disabled = isActive;
     });
+
+    // Toggle between training and demo info display
+    const trainingInfo = document.getElementById('training-info');
+    const demoInfo = document.getElementById('demo-info');
+    if (status === 'demo_running') {
+        trainingInfo.style.display = 'none';
+        demoInfo.style.display = 'flex';
+        clearDemoStats();  // Clear stats when demo starts
+    } else {
+        trainingInfo.style.display = 'flex';
+        demoInfo.style.display = 'none';
+        if (status === 'stopped') {
+            clearDemoStats();  // Clear stats when demo stops
+        }
+    }
+}
+
+/**
+ * Update demo mode display
+ */
+function updateDemoDisplay(data) {
+    if (data.episode !== undefined) {
+        document.getElementById('demo-episode').textContent = data.episode;
+    }
+    if (data.score !== undefined) {
+        document.getElementById('demo-score').textContent = Math.round(data.score);
+    }
+    if (data.lines !== undefined) {
+        document.getElementById('demo-lines').textContent = data.lines;
+    }
+}
+
+/**
+ * Clear demo stats display
+ */
+function clearDemoStats() {
+    document.getElementById('demo-episode').textContent = '0';
+    document.getElementById('demo-score').textContent = '0';
+    document.getElementById('demo-lines').textContent = '0';
 }
 
 /**
@@ -272,7 +323,11 @@ function setupControls() {
     btnStart.addEventListener('click', () => {
         // Get config values from inputs
         const targetLines = parseInt(document.getElementById('target-lines').value) || null;
-        const maxTimesteps = parseInt(document.getElementById('max-timesteps').value) || 100000;
+        const trainUntilTarget = document.getElementById('train-until-target').checked;
+        // If "train until target" is checked, use very high timesteps (effectively unlimited)
+        const maxTimesteps = trainUntilTarget
+            ? 999999999
+            : (parseInt(document.getElementById('max-timesteps').value) || 100000);
 
         // Send start command with config
         const sent = wsClient.send({
